@@ -1,7 +1,8 @@
 import axios from "axios";
-import { Artist } from "../src/models/artist";
+import { NextApiRequest, NextApiResponse } from "next";
+import { Artist } from "../../../src/models/artist";
 
-const MUSIXMATCH_API_KEY = "";
+const MUSIXMATCH_API_KEY = process.env.MUSIXMATCH_API_KEY;
 
 interface MusixmatchResponse<T> {
   message: {
@@ -30,28 +31,23 @@ function getBody<T>(musixmatchResponse: MusixmatchResponse<T>): T {
   return musixmatchResponse.message.body;
 }
 
-export async function getArtists(): Promise<Artist[] | null> {
+export default async (
+  req: NextApiRequest,
+  res: NextApiResponse<{ artists: Artist[] }>
+) => {
   const page = 1;
   const pageSize = 10;
   const country = "it";
   const url = `${baseUrl}/chart.artists.get?page=${page}&page_size=${pageSize}&country=${country}&apikey=${MUSIXMATCH_API_KEY}`;
 
-  try {
-    fetch(url, { mode: "no-cors" })
-      .then((res) => res.json())
-      .then(console.log);
-    const res = await axios
-      .get<MusixmatchResponse<ArtistListResponse>>(url)
-      .then((r) => getBody(r.data));
+  const apiRes = await axios
+    .get<MusixmatchResponse<ArtistListResponse>>(url)
+    .then((r) => getBody(r.data));
 
-    const artists: Artist[] = res.artist_list.map((artist) => ({
-      id: artist.artist.artist_id,
-      name: artist.artist.artist_name,
-    }));
+  const artists: Artist[] = apiRes.artist_list.map((artist) => ({
+    id: artist.artist.artist_id,
+    name: artist.artist.artist_name,
+  }));
 
-    return artists;
-  } catch (error) {
-    console.log(error);
-    return null;
-  }
-}
+  res.status(200).send({ artists });
+};

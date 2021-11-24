@@ -1,18 +1,13 @@
-import axios from "axios";
+import React from "react";
 import { StatusBar } from "expo-status-bar";
-import React, { useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+
+import Artists from "../src/components/Artists";
 
 export default function App() {
-  useEffect(() => {
-    // getArtists().then((artists) => console.log({ artists }));
-  }, []);
-
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>
-        Open up App.tsx to start working on your app!
-      </Text>
+      <Artists />
       {/* eslint-disable-next-line react/style-prop-object */}
       <StatusBar style="auto" />
     </View>
@@ -25,8 +20,5 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
-  },
-  text: {
-    color: "red",
   },
 });
