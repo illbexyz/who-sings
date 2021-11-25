@@ -7,7 +7,7 @@ function baseUrl() {
   if (Platform.OS === "web") {
     return "";
   } else {
-    return "https://who-sings-blond.vercel.app";
+    return "https://who-sings-illbexyz.vercel.app";
   }
 }
 
