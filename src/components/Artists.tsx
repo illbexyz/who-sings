@@ -1,12 +1,22 @@
-import { ActivityIndicator, Text } from "react-native";
+import React from "react";
+import { ActivityIndicator, Platform, Text } from "react-native";
 import useSWR from "swr";
 import { Artist } from "../models/artist";
 
-const fetchArtists = (url: string): Promise<{ artists: Artist[] }> =>
-  fetch(url).then((res) => res.json());
+function baseUrl() {
+  if (Platform.OS === "web") {
+    return "";
+  } else {
+    return "https://who-sings-blond.vercel.app";
+  }
+}
+
+function fetchArtists(url: string): Promise<{ artists: Artist[] }> {
+  return fetch(url).then((res) => res.json());
+}
 
 export default function Artists() {
-  const { data, error } = useSWR("/api/artists", fetchArtists);
+  const { data, error } = useSWR(`${baseUrl()}/api/artists`, fetchArtists);
 
   if (error) return <Text>Failed to load</Text>;
 

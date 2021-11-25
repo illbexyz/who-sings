@@ -35,3 +35,4 @@ web-build/
 # @end @expo/next-adapter
 
 .env.local
+.vercel

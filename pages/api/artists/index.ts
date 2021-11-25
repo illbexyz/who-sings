@@ -1,6 +1,26 @@
 import axios from "axios";
+import Cors from "cors";
 import { NextApiRequest, NextApiResponse } from "next";
+
 import { Artist } from "../../../src/models/artist";
+
+const cors = Cors({
+  methods: ["GET", "HEAD"],
+});
+
+// Helper method to wait for a middleware to execute before continuing
+// And to throw an error when an error happens in a middleware
+function runMiddleware(req: NextApiRequest, res: NextApiResponse, fn: any) {
+  return new Promise((resolve, reject) => {
+    fn(req, res, (result: any) => {
+      if (result instanceof Error) {
+        return reject(result);
+      }
+
+      return resolve(result);
+    });
+  });
+}
 
 const MUSIXMATCH_API_KEY = process.env.MUSIXMATCH_API_KEY;
 
@@ -35,6 +55,8 @@ export default async (
   req: NextApiRequest,
   res: NextApiResponse<{ artists: Artist[] }>
 ) => {
+  await runMiddleware(req, res, cors);
+
   const page = 1;
   const pageSize = 10;
   const country = "it";
