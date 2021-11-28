@@ -1,4 +1,5 @@
-import { GameConfig } from "../src/models/game";
+import { NextApiRequest, NextApiResponse } from "next";
+import { GameConfig } from "../models/game";
 
 export interface MusixmatchResponse<T> {
   message: {
@@ -91,4 +92,20 @@ export function mockGame(): GameConfig {
       },
     ],
   };
+}
+
+export function runMiddleware(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  fn: any
+) {
+  return new Promise((resolve, reject) => {
+    fn(req, res, (result: any) => {
+      if (result instanceof Error) {
+        return reject(result);
+      }
+
+      return resolve(result);
+    });
+  });
 }

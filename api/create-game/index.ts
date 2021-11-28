@@ -3,16 +3,16 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { Artist } from "../../src/models/artist";
 import { GameConfig, GameQuestion } from "../../src/models/game";
 import { Track } from "../../src/models/track";
-import { cors } from "../cors";
-import { runMiddleware } from "../middlewares";
 import {
   baseUrl,
   getBody,
   MusixmatchResponse,
   MUSIXMATCH_API_KEY,
   randomIntTo,
+  runMiddleware,
   shuffle,
-} from "../utils";
+} from "../../src/utils/api-utils";
+import { cors } from "../../src/utils/cors";
 
 interface ArtistResponse {
   artist: {
