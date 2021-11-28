@@ -1,8 +1,8 @@
 import axios from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
-import { Artist } from "../../../src/models/artist";
-import { GameConfig, GameQuestion } from "../../../src/models/game";
-import { Track } from "../../../src/models/track";
+import { Artist } from "../../src/models/artist";
+import { GameConfig, GameQuestion } from "../../src/models/game";
+import { Track } from "../../src/models/track";
 import { cors } from "../cors";
 import { runMiddleware } from "../middlewares";
 import {

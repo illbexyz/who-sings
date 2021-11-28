@@ -1,6 +1,6 @@
 import axios from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
-import { Artist } from "../../../src/models/artist";
+import { Artist } from "../../src/models/artist";
 import { cors } from "../cors";
 import { runMiddleware } from "../middlewares";
 import {

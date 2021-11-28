@@ -1,4 +1,4 @@
-import { GameConfig } from "../../src/models/game";
+import { GameConfig } from "../src/models/game";
 
 export interface MusixmatchResponse<T> {
   message: {
