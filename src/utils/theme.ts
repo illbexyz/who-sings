@@ -1,6 +1,6 @@
 import { extendTheme } from "native-base";
 
-export const theme = extendTheme({
+const baseTheme = {
   fontConfig: {
     JosefinSans: {
       500: {
@@ -16,20 +16,50 @@ export const theme = extendTheme({
     body: "JosefinSans",
     mono: "JosefinSans",
   },
+  initialColorMode: "dark",
+};
+
+export const theme = extendTheme({
+  ...baseTheme,
   colors: {
-    primary: {
-      500: "#FBAB7D",
-    },
-    background: "#000000",
     backgroundGradient: {
       linearGradient: {
-        colors: ["#fbab7e", "#f7ce68"],
+        colors: ["#2F8CE9", "#596FD4"],
         start: [0, 0],
-        end: [1, 0],
+        end: [0, 1],
       },
     },
   },
-  config: {
-    initialColorMode: "dark",
+  components: {
+    Text: {
+      baseStyle: {
+        color: "#ffffff",
+        letterSpacing: "xs",
+      },
+    },
+    Heading: {
+      baseStyle: {
+        color: "white",
+      },
+    },
+    Button: {
+      defaultProps: {
+        bg: "white",
+        rounded: "2xl",
+        px: "4",
+        py: "4",
+        shadow: "2",
+        _text: { fontSize: "lg", fontWeight: "bold", color: "#5566C9" },
+        _hover: {
+          bg: "#e5e5e5",
+        },
+        _pressed: {
+          bg: "white",
+        },
+        _focus: {
+          bg: "white",
+        },
+      },
+    },
   },
 });

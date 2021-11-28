@@ -1,5 +1,5 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Button, Column, Heading, IconButton, Text } from "native-base";
+import { Box, Button, Column, Heading } from "native-base";
 import React from "react";
 import { RootStackParamList } from "../../App";
 import { useStore } from "../store/store";
@@ -8,11 +8,11 @@ import { theme } from "../utils/theme";
 type HomeProps = NativeStackScreenProps<RootStackParamList, "HomeScreen">;
 
 const Logo = () => (
-  <>
+  <Box rounded="2xl" p="8" justifyContent="center" alignItems="center">
     <Heading
       fontFamily="heading"
       textAlign="center"
-      fontSize="7xl"
+      fontSize="6xl"
       fontWeight="bold"
       lineHeight="xs"
     >
@@ -21,13 +21,13 @@ const Logo = () => (
     <Heading
       fontFamily="heading"
       textAlign="center"
-      fontSize="7xl"
+      fontSize="6xl"
       fontWeight="bold"
       lineHeight="xs"
     >
       SINGS
     </Heading>
-  </>
+  </Box>
 );
 
 export default function HomeScreen({ navigation }: HomeProps) {
@@ -35,17 +35,16 @@ export default function HomeScreen({ navigation }: HomeProps) {
   const logout = useStore((store) => store.logout);
 
   return (
-    <Column bg={theme.colors.backgroundGradient} flex={1} p="12" safeArea>
+    <Column
+      flex={1}
+      p="12"
+      bg={theme.colors.backgroundGradient}
+      safeArea
+      justifyContent="center"
+    >
       <Logo />
 
-      <IconButton
-        icon={<Text fontSize="7xl">▶️</Text>}
-        alignSelf="center"
-        borderRadius="full"
-        mt="16"
-        px="16"
-        onPress={() => navigation.navigate("GameScreen")}
-      />
+      <Button onPress={() => navigation.navigate("GameScreen")}>Play</Button>
 
       {user && (
         <Button mt="2" onPress={() => logout()}>

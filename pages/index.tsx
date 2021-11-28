@@ -1,13 +1,10 @@
-import React from "react";
 import { StatusBar } from "expo-status-bar";
+import React from "react";
 import { StyleSheet, View } from "react-native";
-
-import Artists from "../src/components/Artists";
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <Artists />
       {/* eslint-disable-next-line react/style-prop-object */}
       <StatusBar style="auto" />
     </View>

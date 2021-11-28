@@ -6,8 +6,8 @@ import {
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AppLoading from "expo-app-loading";
-import { NativeBaseProvider } from "native-base";
-import React from "react";
+import { NativeBaseProvider, useColorMode } from "native-base";
+import React, { useEffect } from "react";
 import GameScreen from "./src/screens/GameScreen";
 import HomeScreen from "./src/screens/HomeScreen";
 import { theme } from "./src/utils/theme";
@@ -30,6 +30,11 @@ function App() {
     JosefinSans_500Medium,
     JosefinSans_700Bold,
   });
+  const { setColorMode } = useColorMode();
+
+  useEffect(() => {
+    setColorMode("dark");
+  }, []);
 
   if (!fontsLoaded) {
     return <AppLoading />;

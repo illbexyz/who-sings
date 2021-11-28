@@ -3,18 +3,12 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { Artist } from "../../../src/models/artist";
 import { cors } from "../cors";
 import { runMiddleware } from "../middlewares";
-
-const MUSIXMATCH_API_KEY = process.env.MUSIXMATCH_API_KEY;
-
-interface MusixmatchResponse<T> {
-  message: {
-    header: {
-      status_code: 200 | 400 | 401 | 402 | 403 | 404 | 405 | 500 | 503;
-      execute_time: number;
-    };
-    body: T;
-  };
-}
+import {
+  baseUrl,
+  getBody,
+  MusixmatchResponse,
+  MUSIXMATCH_API_KEY,
+} from "../utils";
 
 interface ArtistResponse {
   artist: {
@@ -25,12 +19,6 @@ interface ArtistResponse {
 
 interface ArtistListResponse {
   artist_list: ArtistResponse[];
-}
-
-const baseUrl = "https://api.musixmatch.com/ws/1.1";
-
-function getBody<T>(musixmatchResponse: MusixmatchResponse<T>): T {
-  return musixmatchResponse.message.body;
 }
 
 export default async (
