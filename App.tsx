@@ -10,6 +10,8 @@ import { NativeBaseProvider, useColorMode } from "native-base";
 import React, { useEffect } from "react";
 import GameScreen from "./src/screens/GameScreen";
 import HomeScreen from "./src/screens/HomeScreen";
+import LeaderboardScreen from "./src/screens/LeaderboardScreen";
+import ProfileScreen from "./src/screens/ProfileScreen";
 import { theme } from "./src/utils/theme";
 
 const config = {
@@ -21,6 +23,8 @@ const config = {
 export type RootStackParamList = {
   HomeScreen: undefined;
   GameScreen: undefined;
+  LeaderboardScreen: undefined;
+  ProfileScreen: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -49,6 +53,16 @@ function App() {
         >
           <Stack.Screen name="HomeScreen" component={HomeScreen} />
           <Stack.Screen name="GameScreen" component={GameScreen} />
+          <Stack.Screen
+            name="LeaderboardScreen"
+            component={LeaderboardScreen}
+            options={{ headerShown: true }}
+          />
+          <Stack.Screen
+            name="ProfileScreen"
+            component={ProfileScreen}
+            options={{ headerShown: true }}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </NativeBaseProvider>

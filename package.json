@@ -12,7 +12,6 @@
     "build:web": "expo build:web"
   },
   "dependencies": {
-    "@expo-google-fonts/inter": "^0.2.0",
     "@expo-google-fonts/josefin-sans": "^0.2.0",
     "@react-navigation/native": "^6.0.6",
     "@react-navigation/native-stack": "^6.2.5",

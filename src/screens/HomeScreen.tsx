@@ -1,34 +1,13 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Box, Button, Column, Heading } from "native-base";
+import { Button, Column } from "native-base";
 import React from "react";
 import { RootStackParamList } from "../../App";
+import Login from "../components/Login";
+import Logo from "../components/Logo";
 import { useStore } from "../store/store";
 import { theme } from "../utils/theme";
 
 type HomeProps = NativeStackScreenProps<RootStackParamList, "HomeScreen">;
-
-const Logo = () => (
-  <Box rounded="2xl" p="8" justifyContent="center" alignItems="center">
-    <Heading
-      fontFamily="heading"
-      textAlign="center"
-      fontSize="6xl"
-      fontWeight="bold"
-      lineHeight="xs"
-    >
-      WHO
-    </Heading>
-    <Heading
-      fontFamily="heading"
-      textAlign="center"
-      fontSize="6xl"
-      fontWeight="bold"
-      lineHeight="xs"
-    >
-      SINGS
-    </Heading>
-  </Box>
-);
 
 export default function HomeScreen({ navigation }: HomeProps) {
   const user = useStore((store) => store.user);
@@ -44,12 +23,26 @@ export default function HomeScreen({ navigation }: HomeProps) {
     >
       <Logo />
 
-      <Button onPress={() => navigation.navigate("GameScreen")}>Play</Button>
-
-      {user && (
-        <Button mt="2" onPress={() => logout()}>
-          Logout
-        </Button>
+      {!user ? (
+        <Login />
+      ) : (
+        <>
+          <Button onPress={() => navigation.navigate("GameScreen")}>
+            Play
+          </Button>
+          <Button
+            mt="2"
+            onPress={() => navigation.navigate("LeaderboardScreen")}
+          >
+            Leaderboard
+          </Button>
+          <Button mt="2" onPress={() => navigation.navigate("ProfileScreen")}>
+            Profile
+          </Button>
+          <Button mt="2" onPress={() => logout()}>
+            Logout
+          </Button>
+        </>
       )}
     </Column>
   );

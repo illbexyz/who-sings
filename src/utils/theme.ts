@@ -59,7 +59,23 @@ export const theme = extendTheme({
         _focus: {
           bg: "white",
         },
+        _disabled: {
+          bg: "#e5e5e5",
+        },
       },
     },
+    Input: {
+      defaultProps: {
+        p: "4",
+        fontSize: "xl",
+        color: "white",
+        borderColor: "white",
+        rounded: "lg",
+        _focus: {
+          borderColor: "white",
+        },
+      },
+    },
+    FormControl: {},
   },
 });
