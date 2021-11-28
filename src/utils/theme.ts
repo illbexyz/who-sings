@@ -70,6 +70,7 @@ export const theme = extendTheme({
         fontSize: "xl",
         color: "white",
         borderColor: "white",
+        selectionColor: "#ffffff",
         rounded: "lg",
         _focus: {
           borderColor: "white",
