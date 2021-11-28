@@ -9,7 +9,6 @@ export interface Game {
   showCorrectAnswer: boolean;
   userChoices: (Artist | null)[];
   config: GameConfig;
-  timer: number;
 }
 
 export interface AppState {
@@ -23,9 +22,9 @@ export interface AppState {
   logout: () => void;
 }
 
-export const QUESTION_TIME_SECONDS = 10;
+export const QUESTION_TIME_MS = 10000;
 
-export const useStore = create<AppState>((set, get) => ({
+export const useStore = create<AppState>((set) => ({
   game: null,
   user: null,
 
@@ -38,8 +37,6 @@ export const useStore = create<AppState>((set, get) => ({
           config: gameRes.data,
           showCorrectAnswer: false,
           userChoices: [],
-          timer: QUESTION_TIME_SECONDS - 2,
-          timerIntervalRef: null,
         },
       }));
     } catch (error) {
@@ -52,8 +49,6 @@ export const useStore = create<AppState>((set, get) => ({
   },
 
   answer: (artist: Artist | null) => {
-    if (get().game?.showCorrectAnswer) return;
-
     set((state) => {
       if (!state.game) throw new Error();
 
@@ -65,10 +60,6 @@ export const useStore = create<AppState>((set, get) => ({
         },
       };
     });
-
-    setTimeout(() => {
-      get().nextQuestion();
-    }, 1000);
   },
 
   nextQuestion: () => {

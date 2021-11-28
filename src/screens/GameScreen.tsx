@@ -1,30 +1,21 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import {
-  Box,
-  Button,
-  Center,
-  Column,
-  Heading,
-  Spinner,
-  Text,
-  useBreakpointValue,
-} from "native-base";
+import { Box, Button, Center, Column, Spinner, Text } from "native-base";
 import { ColorType } from "native-base/lib/typescript/components/types";
 import React, { useEffect } from "react";
 import { RootStackParamList } from "../../App";
+import GameTimer from "../components/GameTimer";
 import { Artist } from "../models/artist";
 import { useStore } from "../store/store";
 import { theme } from "../utils/theme";
-import { zip } from "../utils/zip";
 
 type GameProps = NativeStackScreenProps<RootStackParamList, "GameScreen">;
 
 function buttonBg(
   correctChoice: Artist,
-  userChoice: Artist,
+  userChoice: Artist | null,
   currentChoice: Artist
 ): ColorType {
-  if (currentChoice.id === userChoice.id) {
+  if (currentChoice.id === userChoice?.id) {
     return currentChoice.id === correctChoice.id ? "green.400" : "red.400";
   }
 
@@ -32,17 +23,22 @@ function buttonBg(
 }
 
 export default function GameScreen({ navigation }: GameProps) {
-  const maxHeight = useBreakpointValue({
-    xl: "96",
-  });
   const game = useStore((store) => store.game);
   const createGame = useStore((store) => store.createGame);
-  const clearGame = useStore((store) => store.clearGame);
   const answer = useStore((store) => store.answer);
+  const nextQuestion = useStore((store) => store.nextQuestion);
 
   useEffect(() => {
     createGame();
   }, []);
+
+  useEffect(() => {
+    if (game?.showCorrectAnswer) {
+      setTimeout(() => {
+        nextQuestion();
+      }, 2000);
+    }
+  }, [game?.showCorrectAnswer]);
 
   if (!game) {
     return (
@@ -53,47 +49,18 @@ export default function GameScreen({ navigation }: GameProps) {
   }
 
   if (game.currentIndex > game.config.questions.length - 1) {
-    const score = zip(
-      game.userChoices,
-      game.config.questions.map((q) => q.track.artist)
-    ).reduce(
-      (acc, [userChoice, correctAnswer]) =>
-        userChoice?.id === correctAnswer.id ? acc + 1 : acc,
-      0
-    );
-
-    return (
-      <Center bg={theme.colors.backgroundGradient} flex={1} safeArea>
-        <Heading>
-          {score}/{game.config.questions.length}
-        </Heading>
-
-        <Button
-          onPress={() => {
-            clearGame();
-            navigation.navigate("HomeScreen");
-          }}
-        >
-          Yay!
-        </Button>
-      </Center>
-    );
+    navigation.navigate("GameResultsScreen");
+    return <Center bg={theme.colors.backgroundGradient}></Center>;
   }
 
   const question = game.config.questions[game.currentIndex];
   const userChoice = game.showCorrectAnswer
     ? game.userChoices[game.currentIndex]
-    : null;
+    : undefined;
 
   return (
     <Column
-      bg={{
-        linearGradient: {
-          colors: ["#2F8CE9", "#596FD4"],
-          start: [0, 0],
-          end: [0, 1],
-        },
-      }}
+      bg={theme.colors.backgroundGradient}
       flex={1}
       safeArea
       alignItems="center"
@@ -105,32 +72,13 @@ export default function GameScreen({ navigation }: GameProps) {
         px="8"
         py="6"
         alignItems="flex-start"
-        maxH={maxHeight}
+        maxH={{ xl: 96 }}
         flex={1}
       >
-        <Box
-          w="full"
-          rounded="2xl"
-          bg="#87C1FF"
-          borderStyle="solid"
-          borderColor="#87C1FF"
-          borderWidth="2"
-          justifyContent="center"
-          overflow="hidden"
-        >
-          <Box
-            position="absolute"
-            w={`${game.timer * 10}%`}
-            h="full"
-            bg="#0da8fb"
-            rounded="xl"
-            shadow="1"
-          ></Box>
-
-          <Text fontSize="xl" fontWeight="bold" alignSelf="center" zIndex={1}>
-            {Math.floor(game.timer)}
-          </Text>
-        </Box>
+        <GameTimer
+          isTicking={!game.showCorrectAnswer}
+          onTimesUp={() => answer(null)}
+        />
 
         <Text fontSize="md" mt="8">
           Song {game.currentIndex + 1} of {game.config.questions.length}
@@ -143,9 +91,10 @@ export default function GameScreen({ navigation }: GameProps) {
         <Box flex={1} />
 
         {question.choices.map((choice) => {
-          const bgColor = !userChoice
-            ? undefined
-            : buttonBg(question.track.artist, userChoice, choice);
+          const bgColor =
+            userChoice === undefined
+              ? undefined
+              : buttonBg(question.track.artist, userChoice, choice);
           return (
             <Button
               key={choice.id}

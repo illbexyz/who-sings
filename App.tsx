@@ -8,6 +8,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AppLoading from "expo-app-loading";
 import { NativeBaseProvider, useColorMode } from "native-base";
 import React, { useEffect } from "react";
+import GameResultsScreen from "./src/screens/GameResultsScreen";
 import GameScreen from "./src/screens/GameScreen";
 import HomeScreen from "./src/screens/HomeScreen";
 import LeaderboardScreen from "./src/screens/LeaderboardScreen";
@@ -23,6 +24,7 @@ const config = {
 export type RootStackParamList = {
   HomeScreen: undefined;
   GameScreen: undefined;
+  GameResultsScreen: undefined;
   LeaderboardScreen: undefined;
   ProfileScreen: undefined;
 };
@@ -49,19 +51,27 @@ function App() {
       <NavigationContainer>
         <Stack.Navigator
           initialRouteName="HomeScreen"
-          screenOptions={{ headerShown: false }}
+          screenOptions={{
+            headerShown: false,
+            headerStyle: { backgroundColor: "#2F8CE9" },
+            headerTintColor: "#FFFFFF",
+          }}
         >
           <Stack.Screen name="HomeScreen" component={HomeScreen} />
           <Stack.Screen name="GameScreen" component={GameScreen} />
           <Stack.Screen
+            name="GameResultsScreen"
+            component={GameResultsScreen}
+          />
+          <Stack.Screen
             name="LeaderboardScreen"
             component={LeaderboardScreen}
-            options={{ headerShown: true }}
+            options={{ headerShown: true, headerTitle: "Leaderboard" }}
           />
           <Stack.Screen
             name="ProfileScreen"
             component={ProfileScreen}
-            options={{ headerShown: true }}
+            options={{ headerShown: true, headerTitle: "Profile" }}
           />
         </Stack.Navigator>
       </NavigationContainer>
