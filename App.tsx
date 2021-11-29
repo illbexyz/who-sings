@@ -13,6 +13,7 @@ import GameScreen from "./src/screens/GameScreen";
 import HomeScreen from "./src/screens/HomeScreen";
 import LeaderboardScreen from "./src/screens/LeaderboardScreen";
 import ProfileScreen from "./src/screens/ProfileScreen";
+import { useStore } from "./src/store/store";
 import { theme } from "./src/utils/theme";
 
 const config = {
@@ -32,6 +33,8 @@ export type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function App() {
+  const isInitializing = useStore((store) => store.isInitializing);
+  const restoreState = useStore((store) => store.restoreState);
   const [fontsLoaded] = useFonts({
     JosefinSans_500Medium,
     JosefinSans_700Bold,
@@ -39,10 +42,11 @@ function App() {
   const { setColorMode } = useColorMode();
 
   useEffect(() => {
+    restoreState();
     setColorMode("dark");
   }, []);
 
-  if (!fontsLoaded) {
+  if (!fontsLoaded || isInitializing) {
     return <AppLoading />;
   }
 

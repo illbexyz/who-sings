@@ -9,3 +9,10 @@ export interface GameQuestion {
 export interface GameConfig {
   questions: GameQuestion[];
 }
+
+export interface Game {
+  currentIndex: number;
+  showCorrectAnswer: boolean;
+  userChoices: (Artist | null)[];
+  config: GameConfig;
+}

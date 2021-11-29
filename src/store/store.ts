@@ -1,17 +1,12 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import create from "zustand";
 import { Artist } from "../models/artist";
-import { GameConfig } from "../models/game";
+import { Game, GameConfig } from "../models/game";
 import { apiBaseUrl } from "../utils/api";
 
-export interface Game {
-  currentIndex: number;
-  showCorrectAnswer: boolean;
-  userChoices: (Artist | null)[];
-  config: GameConfig;
-}
-
 export interface AppState {
+  isInitializing: boolean;
   game: Game | null;
   user: string | null;
   createGame: () => void;
@@ -20,11 +15,14 @@ export interface AppState {
   nextQuestion: () => void;
   login: (user: string) => void;
   logout: () => void;
+  restoreState: () => void;
 }
 
 export const QUESTION_TIME_MS = 10000;
+const STORAGE_USER_KEY = "who-sings:user";
 
 export const useStore = create<AppState>((set) => ({
+  isInitializing: true,
   game: null,
   user: null,
 
@@ -76,7 +74,29 @@ export const useStore = create<AppState>((set) => ({
     });
   },
 
-  login: (user: string) => set((_) => ({ user })),
+  login: (user: string) => {
+    set((_) => ({ user }));
 
-  logout: () => set((_) => ({ user: null })),
+    AsyncStorage.setItem(STORAGE_USER_KEY, user);
+  },
+
+  logout: () => {
+    set((_) => ({ user: null }));
+
+    AsyncStorage.removeItem(STORAGE_USER_KEY);
+  },
+
+  restoreState: async () => {
+    set(() => ({ isInitializing: true }));
+
+    try {
+      const user = await AsyncStorage.getItem(STORAGE_USER_KEY);
+
+      if (user) {
+        set(() => ({ user }));
+      }
+    } catch (error) {}
+
+    set(() => ({ isInitializing: false }));
+  },
 }));

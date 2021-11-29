@@ -15,11 +15,11 @@ export default function HomeScreen({ navigation }: HomeProps) {
 
   return (
     <Column
+      safeArea
       flex={1}
       p="12"
-      bg={theme.colors.backgroundGradient}
-      safeArea
       justifyContent="center"
+      bg={theme.colors.backgroundGradient}
     >
       <Logo />
 
@@ -30,15 +30,18 @@ export default function HomeScreen({ navigation }: HomeProps) {
           <Button onPress={() => navigation.navigate("GameScreen")}>
             Play
           </Button>
+
           <Button
             mt="2"
             onPress={() => navigation.navigate("LeaderboardScreen")}
           >
             Leaderboard
           </Button>
+
           <Button mt="2" onPress={() => navigation.navigate("ProfileScreen")}>
             Profile
           </Button>
+
           <Button mt="2" onPress={() => logout()}>
             Logout
           </Button>

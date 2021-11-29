@@ -72,6 +72,10 @@ export const theme = extendTheme({
         borderColor: "white",
         selectionColor: "#ffffff",
         rounded: "lg",
+        _hover: {
+          borderColor: "white",
+          bg: null,
+        },
         _focus: {
           borderColor: "white",
         },

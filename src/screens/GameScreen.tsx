@@ -60,20 +60,20 @@ export default function GameScreen({ navigation }: GameProps) {
 
   return (
     <Column
-      bg={theme.colors.backgroundGradient}
-      flex={1}
       safeArea
+      flex={1}
       alignItems="center"
       justifyContent="center"
+      bg={theme.colors.backgroundGradient}
     >
       <Column
+        flex={1}
         w={{ base: "full", lg: "50%" }}
         h={{ base: "full", lg: "70%" }}
         px="8"
         py="6"
         alignItems="flex-start"
         maxH={{ xl: 96 }}
-        flex={1}
       >
         <GameTimer
           isTicking={!game.showCorrectAnswer}

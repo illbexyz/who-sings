@@ -18,7 +18,6 @@ export default function Login() {
 
       <Button
         mt="4"
-        _disabled={{ bg: "red" }}
         disabled={!username.length}
         onPress={() => login(username)}
       >
