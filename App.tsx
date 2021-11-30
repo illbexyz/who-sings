@@ -29,7 +29,7 @@ const linking = {
       HomeScreen: "/",
       LeaderboardScreen: "/leaderboard",
       GameScreen: "/game",
-      GameScreenResults: "/game-results",
+      GameResultsScreen: "/game-results",
       ProfileScreen: "/profile",
     },
   },

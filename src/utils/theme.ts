@@ -58,10 +58,10 @@ export const customTheme = extendTheme({
         shadow: "2",
         _text: { fontSize: "lg", fontWeight: "bold", color: "#5566C9" },
         _hover: {
-          bg: "#e5e5e5",
+          bg: "#bde0ff",
         },
         _pressed: {
-          bg: "white",
+          bg: "#a0d3ff",
           _text: { color: "black" },
         },
         _focus: {
