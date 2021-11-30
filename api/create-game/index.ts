@@ -28,6 +28,7 @@ interface TrackResponse {
     artist_id: number;
     artist_name: string;
     track_name: string;
+    has_lyrics: 0 | 1;
   };
 }
 
@@ -81,7 +82,11 @@ async function fetchTracks(
 
   return await axios
     .get<MusixmatchResponse<{ track_list: TrackResponse[] }>>(tracksUrl)
-    .then((r) => getBody(r.data).track_list.map(toTrackNoLyrics));
+    .then((r) =>
+      getBody(r.data)
+        .track_list.filter(({ track }) => track.has_lyrics === 1)
+        .map(toTrackNoLyrics)
+    );
 }
 
 async function fetchLyrics(trackId: number): Promise<LyricsResponse> {

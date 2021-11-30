@@ -1,46 +1,65 @@
+import { useFocusEffect } from "@react-navigation/core";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Button, Center, Heading } from "native-base";
-import React, { useEffect } from "react";
+import { Button, Center, Column, Heading, Text } from "native-base";
+import React, { useCallback } from "react";
 import { RootStackParamList } from "../../App";
+import { scoreOfGame } from "../models/score";
 import { useStore } from "../store/store";
 import { theme } from "../utils/theme";
-import { zip } from "../utils/zip";
 
 type LeaderboardProps = NativeStackScreenProps<
   RootStackParamList,
   "LeaderboardScreen"
 >;
 
+const Container: React.FC = ({ children }) => (
+  <Center bg={theme.colors.backgroundGradient} flex={1} safeArea>
+    {children}
+  </Center>
+);
+
 export default function GameResultsScreen({ navigation }: LeaderboardProps) {
-  const game = useStore((store) => store.game);
+  const score = useStore((store) =>
+    store.game ? scoreOfGame(store.game) : null
+  );
   const clearGame = useStore((store) => store.clearGame);
+  const saveScore = useStore((store) => store.saveScore);
 
-  useEffect(() => {
-    return () => {
-      clearGame();
-    };
-  });
-
-  if (!game) throw new Error("Game can't be null here");
-
-  const score = zip(
-    game.config.questions.map((q) => q.track.artist),
-    game.userChoices
-  ).reduce(
-    (acc, [correctAnswer, userChoice]) =>
-      userChoice?.id === correctAnswer.id ? acc + 1 : acc,
-    0
+  useFocusEffect(
+    useCallback(() => {
+      if (score != null) {
+        saveScore(score);
+      }
+    }, [score])
   );
 
-  return (
-    <Center bg={theme.colors.backgroundGradient} flex={1} safeArea>
-      <Heading>
-        Score: {score}/{game.config.questions.length}
-      </Heading>
+  if (score == null) {
+    return (
+      <Container>
+        <Text>Something went wrong</Text>
+      </Container>
+    );
+  }
 
-      <Button mt="4" onPress={() => navigation.navigate("HomeScreen")}>
-        Yay!
-      </Button>
-    </Center>
+  return (
+    <Container>
+      <Heading>Score: {score}</Heading>
+
+      <Column>
+        <Button
+          mt="8"
+          onPress={() => {
+            clearGame();
+            navigation.replace("GameScreen");
+          }}
+        >
+          Play Again
+        </Button>
+
+        <Button mt="4" onPress={() => navigation.pop()}>
+          Home
+        </Button>
+      </Column>
+    </Container>
   );
 }

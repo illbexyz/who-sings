@@ -21,6 +21,10 @@ const baseTheme = {
 
 export const theme = extendTheme({
   ...baseTheme,
+
+  sizes: {
+    175: 175 * 4,
+  },
   colors: {
     backgroundGradient: {
       linearGradient: {
@@ -55,6 +59,7 @@ export const theme = extendTheme({
         },
         _pressed: {
           bg: "white",
+          _text: { color: "#121212" },
         },
         _focus: {
           bg: "white",

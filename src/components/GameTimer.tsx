@@ -8,34 +8,14 @@ export interface GameTimerProps {
   onTimesUp: () => any;
 }
 
-export default function GameTimer({ isTicking, onTimesUp }: GameTimerProps) {
-  const [timerSeconds, setTimerSeconds] = useState(QUESTION_TIME_MS / 1000);
+const AnimatedTimer = ({ isTicking }: { isTicking: boolean }) => {
   const timerAnim = useRef(new Animated.Value(QUESTION_TIME_MS)).current;
-
   const animation = Animated.timing(timerAnim, {
     toValue: 0,
     duration: QUESTION_TIME_MS,
     useNativeDriver: false,
     easing: Easing.linear,
   });
-
-  useEffect(() => {
-    let interval: NodeJS.Timer;
-
-    if (isTicking) {
-      setTimerSeconds(QUESTION_TIME_MS / 1000);
-
-      interval = setInterval(() => {
-        setTimerSeconds((timerSeconds) => {
-          const nextTimer = timerSeconds - 1;
-          if (nextTimer <= 0) clearInterval(interval);
-          return nextTimer;
-        });
-      }, 1000);
-    }
-
-    return () => clearInterval(interval);
-  }, [isTicking]);
 
   useEffect(() => {
     if (isTicking) {
@@ -46,6 +26,44 @@ export default function GameTimer({ isTicking, onTimesUp }: GameTimerProps) {
     }
 
     return () => animation.stop();
+  }, [isTicking]);
+
+  return (
+    <Animated.View
+      style={{
+        width: timerAnim.interpolate({
+          inputRange: [0, QUESTION_TIME_MS],
+          outputRange: ["0%", "100%"],
+        }),
+        height: "100%",
+        backgroundColor: "#0DA8FB",
+        borderRadius: 16,
+      }}
+    ></Animated.View>
+  );
+};
+
+export default function GameTimer({ isTicking, onTimesUp }: GameTimerProps) {
+  const [timerSeconds, setTimerSeconds] = useState(QUESTION_TIME_MS / 1000);
+
+  useEffect(() => {
+    let interval: NodeJS.Timer;
+
+    if (isTicking) {
+      setTimerSeconds(QUESTION_TIME_MS / 1000);
+
+      interval = setInterval(() => {
+        setTimerSeconds((timerSeconds) => {
+          const nextTimer = timerSeconds - 1;
+          if (nextTimer <= 0) {
+            clearInterval(interval);
+          }
+          return nextTimer;
+        });
+      }, 1000);
+    }
+
+    return () => clearInterval(interval);
   }, [isTicking]);
 
   useEffect(() => {
@@ -63,23 +81,8 @@ export default function GameTimer({ isTicking, onTimesUp }: GameTimerProps) {
       borderStyle="solid"
       borderColor="#87C1FF"
       borderWidth="2"
-      justifyContent="center"
-      overflow="hidden"
     >
-      <Animated.View
-        style={[
-          {
-            width: timerAnim.interpolate({
-              inputRange: [0, QUESTION_TIME_MS],
-              outputRange: ["0%", "100%"],
-            }),
-            height: "100%",
-            backgroundColor: "#0DA8FB",
-            borderRadius: 16,
-            flex: 1,
-          },
-        ]}
-      ></Animated.View>
+      <AnimatedTimer isTicking={isTicking} />
 
       <Text fontSize="xl" fontWeight="bold" alignSelf="center" zIndex={1}>
         {Math.floor(timerSeconds)}

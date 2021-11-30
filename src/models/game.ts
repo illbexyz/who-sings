@@ -10,9 +10,19 @@ export interface GameConfig {
   questions: GameQuestion[];
 }
 
+export interface GameAnswer {
+  artist: Artist | null;
+  elapsedMs: number;
+}
+
 export interface Game {
   currentIndex: number;
+  currentStartTimestamp: number;
   showCorrectAnswer: boolean;
-  userChoices: (Artist | null)[];
+  answers: GameAnswer[];
   config: GameConfig;
+}
+
+export function gameHasNextQuestion(game: Game): boolean {
+  return game.currentIndex + 1 in game.config.questions;
 }

@@ -3,12 +3,14 @@ import axios from "axios";
 import create from "zustand";
 import { Artist } from "../models/artist";
 import { Game, GameConfig } from "../models/game";
+import { Score } from "../models/score";
 import { apiBaseUrl } from "../utils/api";
 
 export interface AppState {
   isInitializing: boolean;
   game: Game | null;
   user: string | null;
+  scores: Score[];
   createGame: () => void;
   clearGame: () => void;
   answer: (artist: Artist | null) => void;
@@ -16,15 +18,19 @@ export interface AppState {
   login: (user: string) => void;
   logout: () => void;
   restoreState: () => void;
+  saveScore: (points: number) => void;
 }
 
 export const QUESTION_TIME_MS = 10000;
-const STORAGE_USER_KEY = "who-sings:user";
 
-export const useStore = create<AppState>((set) => ({
+const STORAGE_USER_KEY = "who-sings:user";
+const STORAGE_SCORES_KEY = "who-sings:scores";
+
+export const useStore = create<AppState>((set, get) => ({
   isInitializing: true,
   game: null,
   user: null,
+  scores: [],
 
   createGame: async () => {
     try {
@@ -34,11 +40,12 @@ export const useStore = create<AppState>((set) => ({
           currentIndex: 0,
           config: gameRes.data,
           showCorrectAnswer: false,
-          userChoices: [],
+          answers: [],
+          currentStartTimestamp: new Date().getTime(),
         },
       }));
     } catch (error) {
-      console.log(error);
+      console.log("createGame()", error);
     }
   },
 
@@ -48,13 +55,18 @@ export const useStore = create<AppState>((set) => ({
 
   answer: (artist: Artist | null) => {
     set((state) => {
-      if (!state.game) throw new Error();
+      if (!state.game) throw new Error("answer(): The game must be defined");
+
+      const answer = {
+        artist,
+        elapsedMs: new Date().getTime() - state.game.currentStartTimestamp,
+      };
 
       return {
         game: {
           ...state.game,
           showCorrectAnswer: true,
-          userChoices: [...state.game.userChoices, artist],
+          answers: [...state.game.answers, answer],
         },
       };
     });
@@ -62,12 +74,14 @@ export const useStore = create<AppState>((set) => ({
 
   nextQuestion: () => {
     set((state) => {
-      if (!state.game) throw new Error();
+      if (!state.game)
+        throw new Error("nextQuestion(): The game must be defined");
 
       return {
         game: {
           ...state.game,
           currentIndex: state.game.currentIndex + 1,
+          currentStartTimestamp: new Date().getTime(),
           showCorrectAnswer: false,
         },
       };
@@ -90,13 +104,39 @@ export const useStore = create<AppState>((set) => ({
     set(() => ({ isInitializing: true }));
 
     try {
-      const user = await AsyncStorage.getItem(STORAGE_USER_KEY);
+      const [[_k1, user], [_k2, scores]] = await AsyncStorage.multiGet([
+        STORAGE_USER_KEY,
+        STORAGE_SCORES_KEY,
+      ]);
 
       if (user) {
         set(() => ({ user }));
       }
-    } catch (error) {}
+
+      if (scores) {
+        set(() => ({ scores: JSON.parse(scores) ?? [] }));
+      }
+    } catch (error) {
+      console.log("restoreState()", error);
+    }
 
     set(() => ({ isInitializing: false }));
+  },
+
+  saveScore: async (points: number) => {
+    const username = get().user;
+    const scores = get().scores;
+
+    if (!username) {
+      console.error("saveScore(): user can't be null");
+      return;
+    }
+
+    const score = { username, points };
+    const nextScores = [...scores, score];
+
+    set(() => ({ scores: nextScores }));
+
+    AsyncStorage.setItem(STORAGE_SCORES_KEY, JSON.stringify(nextScores));
   },
 }));

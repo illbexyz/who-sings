@@ -1,10 +1,12 @@
+import { useFocusEffect } from "@react-navigation/core";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Box, Button, Center, Column, Spinner, Text } from "native-base";
 import { ColorType } from "native-base/lib/typescript/components/types";
-import React, { useEffect } from "react";
+import React, { useCallback } from "react";
 import { RootStackParamList } from "../../App";
 import GameTimer from "../components/GameTimer";
 import { Artist } from "../models/artist";
+import { Game, gameHasNextQuestion } from "../models/game";
 import { useStore } from "../store/store";
 import { theme } from "../utils/theme";
 
@@ -22,40 +24,49 @@ function buttonBg(
   return currentChoice.id === correctChoice.id ? "green.400" : undefined;
 }
 
+const Loader = () => (
+  <Center bg={theme.colors.backgroundGradient} flex={1} safeArea>
+    <Spinner size="lg" accessibilityLabel="Loading game" />
+  </Center>
+);
+
 export default function GameScreen({ navigation }: GameProps) {
-  const game = useStore((store) => store.game);
-  const createGame = useStore((store) => store.createGame);
-  const answer = useStore((store) => store.answer);
-  const nextQuestion = useStore((store) => store.nextQuestion);
+  const [game, createGame, nextQuestion, answer] = useStore((store) => [
+    store.game,
+    store.createGame,
+    store.nextQuestion,
+    store.answer,
+  ]);
 
-  useEffect(() => {
-    createGame();
-  }, []);
+  const answerThenGoNext = useCallback(
+    (game: Game, artist: Artist | null) => {
+      answer(artist);
 
-  useEffect(() => {
-    if (game?.showCorrectAnswer) {
       setTimeout(() => {
-        nextQuestion();
-      }, 2000);
-    }
-  }, [game?.showCorrectAnswer]);
+        if (gameHasNextQuestion(game)) {
+          nextQuestion();
+        } else {
+          navigation.replace("GameResultsScreen");
+        }
+      }, 1000);
+    },
+    [navigation, game]
+  );
 
-  if (!game) {
-    return (
-      <Center bg={theme.colors.backgroundGradient} flex={1} safeArea>
-        <Spinner size="lg" accessibilityLabel="Loading game" />
-      </Center>
-    );
+  useFocusEffect(
+    useCallback(() => {
+      createGame();
+    }, [])
+  );
+
+  const question = game?.config.questions[game.currentIndex];
+
+  if (!question) {
+    return <Loader />;
   }
 
-  if (game.currentIndex > game.config.questions.length - 1) {
-    navigation.navigate("GameResultsScreen");
-    return <Center bg={theme.colors.backgroundGradient}></Center>;
-  }
-
-  const question = game.config.questions[game.currentIndex];
   const userChoice = game.showCorrectAnswer
-    ? game.userChoices[game.currentIndex]
+    ? game.answers[game.currentIndex]
     : undefined;
 
   return (
@@ -68,16 +79,21 @@ export default function GameScreen({ navigation }: GameProps) {
     >
       <Column
         flex={1}
-        w={{ base: "full", lg: "50%" }}
-        h={{ base: "full", lg: "70%" }}
+        w={{ base: "full", sm: "85%", xl: "50%" }}
         px="8"
         py="6"
         alignItems="flex-start"
-        maxH={{ xl: 96 }}
+        _web={{
+          maxH: {
+            base: 175,
+          },
+        }}
       >
         <GameTimer
           isTicking={!game.showCorrectAnswer}
-          onTimesUp={() => answer(null)}
+          onTimesUp={() => {
+            answerThenGoNext(game, null);
+          }}
         />
 
         <Text fontSize="md" mt="8">
@@ -88,16 +104,17 @@ export default function GameScreen({ navigation }: GameProps) {
           {question.track.lyrics}
         </Text>
 
-        <Box flex={1} />
+        <Box flex={1} minH="16" />
 
-        {question.choices.map((choice) => {
+        {question.choices.map((artist) => {
           const bgColor =
             userChoice === undefined
               ? undefined
-              : buttonBg(question.track.artist, userChoice, choice);
+              : buttonBg(question.track.artist, userChoice.artist, artist);
+
           return (
             <Button
-              key={choice.id}
+              key={artist.id}
               mt="3"
               w="full"
               justifyContent="flex-start"
@@ -105,9 +122,11 @@ export default function GameScreen({ navigation }: GameProps) {
               _focus={{ bg: bgColor }}
               _hover={{ bg: bgColor }}
               _pressed={{ bg: bgColor }}
-              onPress={() => answer(choice)}
+              onPress={() => {
+                answerThenGoNext(game, artist);
+              }}
             >
-              {choice.name}
+              {artist.name}
             </Button>
           );
         })}
