@@ -33,6 +33,9 @@ export const customTheme = extendTheme({
         end: [0, 1],
       },
     },
+    black: "#2e2e2e",
+    success: "#82ff97",
+    error: "#ffa79e",
   },
   components: {
     Text: {
@@ -59,7 +62,7 @@ export const customTheme = extendTheme({
         },
         _pressed: {
           bg: "white",
-          _text: { color: "#121212" },
+          _text: { color: "black" },
         },
         _focus: {
           bg: "white",

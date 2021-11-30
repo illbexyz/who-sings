@@ -4,7 +4,7 @@ import React, { useCallback } from "react";
 import { RootStackParamList } from "../../App";
 import Error from "../components/Error";
 import ScreenWithTitle from "../components/ScreenWithTitle";
-import { bestScoreOfUser, recentScores } from "../models/score";
+import { bestScoreOfUser, recentScoresOfUser } from "../models/score";
 import { useStore } from "../store/store";
 
 type ProfileProps = NativeStackScreenProps<RootStackParamList, "ProfileScreen">;
@@ -23,7 +23,10 @@ export default function ProfileScreen({ navigation }: ProfileProps) {
     useCallback(
       ({ scores }) =>
         user
-          ? [bestScoreOfUser(scores, user), recentScores(scores, 10)]
+          ? [
+              bestScoreOfUser(scores, user),
+              recentScoresOfUser(scores, user).slice(0, 10),
+            ]
           : [null, null],
       [user]
     )
@@ -49,8 +52,8 @@ export default function ProfileScreen({ navigation }: ProfileProps) {
 
         {latestScores?.length ? (
           latestScores.map((score, idx) => (
-            <Row alignItems="center">
-              <Text key={idx} fontSize="2xl" fontWeight="bold" w="32">
+            <Row key={idx} alignItems="center">
+              <Text fontSize="2xl" fontWeight="bold" w="32">
                 {score.points}
               </Text>
               <Text fontSize="sm">

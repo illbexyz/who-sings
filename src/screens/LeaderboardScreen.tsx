@@ -41,7 +41,7 @@ const LeaderboardScore = ({ score, idx }: ScoreProps) => (
 
 export default function LeaderboardScreen({ navigation }: LeaderboardProps) {
   const sortedScores = useStore(
-    useCallback((store) => bestScores(store.scores), [])
+    useCallback((store) => bestScores(store.scores).slice(0, 10), [])
   );
 
   return (
