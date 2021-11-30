@@ -77,7 +77,7 @@ async function fetchTracks(
   pageSize = 5,
   country = "it"
 ): Promise<TrackNoLyrics[]> {
-  const page = randomIntTo(10);
+  const page = randomIntTo(5);
   const tracksUrl = `${musixmatchApiUrl}/chart.tracks.get?page=${page}&page_size=${pageSize}&country=${country}&f_has_lyrics=1&apikey=${MUSIXMATCH_API_KEY}`;
 
   return await axios
