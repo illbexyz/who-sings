@@ -22,6 +22,19 @@ const config = {
   },
 };
 
+const linking = {
+  prefixes: ["https://who-sings-illbexyz.vercel.app"],
+  config: {
+    screens: {
+      HomeScreen: "/",
+      LeaderboardScreen: "/leaderboard",
+      GameScreen: "/game",
+      GameScreenResults: "/game-results",
+      ProfileScreen: "/profile",
+    },
+  },
+};
+
 export type RootStackParamList = {
   HomeScreen: undefined;
   GameScreen: undefined;
@@ -48,7 +61,7 @@ function App() {
 
   return (
     <NativeBaseProvider config={config} theme={customTheme}>
-      <NavigationContainer>
+      <NavigationContainer linking={linking}>
         <Stack.Navigator
           initialRouteName="HomeScreen"
           screenOptions={{

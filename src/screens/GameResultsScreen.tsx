@@ -1,6 +1,6 @@
 import { useFocusEffect } from "@react-navigation/core";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Box, Button, Column, Heading, Row, Text, useTheme } from "native-base";
+import { Box, Button, Column, Heading, Row, Text } from "native-base";
 import React, { useCallback } from "react";
 import { RootStackParamList } from "../../App";
 import Error from "../components/Error";
@@ -18,7 +18,6 @@ type LeaderboardProps = NativeStackScreenProps<
 >;
 
 export default function GameResultsScreen({ navigation }: LeaderboardProps) {
-  const theme = useTheme();
   const game = useStore((store) => store.game);
   const [rightAnswers, bonusPoints] = useStore(
     useCallback(

@@ -20,8 +20,8 @@ export default function HomeScreen({ navigation }: HomeProps) {
   return (
     <Column
       safeArea
-      flex={1}
       p="12"
+      flexGrow={1}
       alignItems="center"
       justifyContent="center"
       bg={theme.colors.backgroundGradient}
