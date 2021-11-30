@@ -6,43 +6,21 @@ import { Track } from "../../src/models/track";
 import { cors } from "../../src/utils/cors";
 import { runMiddleware } from "../../src/utils/middleware";
 import {
+  ArtistResponse,
+  getRandomLine,
+  LyricsResponse,
   musixmatchApiUrl,
   musixmatchGetBody,
   MusixmatchResponse,
   MUSIXMATCH_API_KEY,
+  randomizeChoices,
+  toArtist,
+  toTrackNoLyrics,
+  TrackNoLyrics,
+  TrackResponse,
 } from "../../src/utils/musixmatch";
 import { randomIntTo } from "../../src/utils/random";
 import { shuffle } from "../../src/utils/shuffle";
-
-interface ArtistResponse {
-  artist: {
-    artist_id: number;
-    artist_name: string;
-  };
-}
-
-interface TrackResponse {
-  track: {
-    track_id: number;
-    commontrack_id: number;
-    artist_id: number;
-    artist_name: string;
-    track_name: string;
-    has_lyrics: 0 | 1;
-  };
-}
-
-interface LyricsResponse {
-  lyrics_id: number;
-  lyrics_body: string;
-}
-
-function toArtist({ artist }: ArtistResponse): Artist {
-  return {
-    id: artist.artist_id,
-    name: artist.artist_name,
-  };
-}
 
 async function fetchArtists(pageSize = 20, country = "it"): Promise<Artist[]> {
   const page = randomIntTo(3);
@@ -58,19 +36,6 @@ async function fetchArtists(pageSize = 20, country = "it"): Promise<Artist[]> {
     console.log(error);
     return [];
   }
-}
-
-type TrackNoLyrics = Omit<Track, "lyrics">;
-
-function toTrackNoLyrics({ track }: TrackResponse): TrackNoLyrics {
-  return {
-    id: track.track_id,
-    title: track.track_name,
-    artist: {
-      id: track.artist_id,
-      name: track.artist_name,
-    },
-  };
 }
 
 async function fetchTracks(
@@ -95,31 +60,6 @@ async function fetchLyrics(trackId: number): Promise<LyricsResponse> {
   return await axios
     .get<MusixmatchResponse<{ lyrics: LyricsResponse }>>(lyricsUrl)
     .then((r) => musixmatchGetBody(r.data).lyrics);
-}
-
-function getRandomLine(lyrics: LyricsResponse): string {
-  const lines = lyrics.lyrics_body
-    .split("\n")
-    .filter((line) => line.length !== 0);
-  const randomIndex = randomIntTo(Math.max(0, lines.length - 5));
-  return `${lines[randomIndex]}\n${lines[randomIndex + 1]}`;
-}
-
-function randomizeChoices(howMany: number, artists: Artist[]) {
-  if (artists.length < howMany) {
-    throw new Error(`Artists.length: ${artists.length}, howMany: ${howMany}`);
-  }
-
-  const choices = [];
-  const remainingChoices = [...artists];
-
-  for (let i = 0; i < howMany; i++) {
-    const index = randomIntTo(remainingChoices.length - 1);
-    const [artist] = remainingChoices.splice(index, 1);
-    choices.push(artist);
-  }
-
-  return choices;
 }
 
 export default async (
