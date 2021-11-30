@@ -1,4 +1,5 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { format } from "date-fns";
 import { Heading, Row, ScrollView, Text } from "native-base";
 import React, { useCallback } from "react";
 import { RootStackParamList } from "../../App";
@@ -8,14 +9,6 @@ import { bestScoreOfUser, recentScoresOfUser } from "../models/score";
 import { useStore } from "../store/store";
 
 type ProfileProps = NativeStackScreenProps<RootStackParamList, "ProfileScreen">;
-
-const IntlFormat = new Intl.DateTimeFormat(undefined, {
-  day: "2-digit",
-  month: "2-digit",
-  year: "2-digit",
-  hour: "2-digit",
-  minute: "2-digit",
-});
 
 export default function ProfileScreen({ navigation }: ProfileProps) {
   const user = useStore((store) => store.user);
@@ -57,7 +50,7 @@ export default function ProfileScreen({ navigation }: ProfileProps) {
                 {score.points}
               </Text>
               <Text fontSize="sm">
-                {IntlFormat.format(new Date(score.timestamp))}
+                {format(new Date(score.timestamp), "Pp")}
               </Text>
             </Row>
           ))
