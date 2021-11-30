@@ -32,3 +32,17 @@ export function bonusPointsOfGame(game: Game): number {
     )
     .reduce(sum, 0);
 }
+
+export function bestScoreOfUser(scores: Score[], user: string): number {
+  return scores
+    .filter((score) => score.username === user)
+    .reduce((acc, curr) => Math.max(acc, curr.points), 0);
+}
+
+export function recentScores(scores: Score[], length: number): Score[] {
+  return scores.reverse().slice(0, length);
+}
+
+export function bestScores(scores: Score[]): Score[] {
+  return [...scores].sort((s1, s2) => s2.points - s1.points).slice(0, 10);
+}

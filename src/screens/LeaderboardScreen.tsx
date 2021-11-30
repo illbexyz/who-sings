@@ -3,7 +3,7 @@ import { Box, Row, ScrollView, Text } from "native-base";
 import React, { useCallback } from "react";
 import { RootStackParamList } from "../../App";
 import ScreenWithTitle from "../components/ScreenWithTitle";
-import { Score } from "../models/score";
+import { bestScores, Score } from "../models/score";
 import { useStore } from "../store/store";
 
 type LeaderboardProps = NativeStackScreenProps<
@@ -41,11 +41,7 @@ const LeaderboardScore = ({ score, idx }: ScoreProps) => (
 
 export default function LeaderboardScreen({ navigation }: LeaderboardProps) {
   const sortedScores = useStore(
-    useCallback(
-      (store) =>
-        [...store.scores].sort((s1, s2) => s2.points - s1.points).slice(0, 10),
-      []
-    )
+    useCallback((store) => bestScores(store.scores), [])
   );
 
   return (
