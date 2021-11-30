@@ -1,16 +1,16 @@
 import { useFocusEffect } from "@react-navigation/core";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Button, Column } from "native-base";
+import { Button, Column, useTheme } from "native-base";
 import React, { useCallback } from "react";
 import { RootStackParamList } from "../../App";
 import Login from "../components/Login";
 import Logo from "../components/Logo";
 import { useStore } from "../store/store";
-import { theme } from "../utils/theme";
 
 type HomeProps = NativeStackScreenProps<RootStackParamList, "HomeScreen">;
 
 export default function HomeScreen({ navigation }: HomeProps) {
+  const theme = useTheme();
   const user = useStore((store) => store.user);
   const clearGame = useStore((store) => store.clearGame);
   const logout = useStore((store) => store.logout);

@@ -3,16 +3,16 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { Artist } from "../../src/models/artist";
 import { GameConfig, GameQuestion } from "../../src/models/game";
 import { Track } from "../../src/models/track";
+import { cors } from "../../src/utils/cors";
+import { runMiddleware } from "../../src/utils/middleware";
 import {
-  baseUrl,
-  getBody,
+  musixmatchApiUrl,
+  musixmatchGetBody,
   MusixmatchResponse,
   MUSIXMATCH_API_KEY,
-  randomIntTo,
-  runMiddleware,
-  shuffle,
-} from "../../src/utils/api-utils";
-import { cors } from "../../src/utils/cors";
+} from "../../src/utils/musixmatch";
+import { randomIntTo } from "../../src/utils/random";
+import { shuffle } from "../../src/utils/shuffle";
 
 interface ArtistResponse {
   artist: {
@@ -46,14 +46,14 @@ function toArtist({ artist }: ArtistResponse): Artist {
 
 async function fetchArtists(pageSize = 20, country = "it"): Promise<Artist[]> {
   const page = randomIntTo(3);
-  const url = `${baseUrl}/chart.artists.get?page=${page}&page_size=${pageSize}&country=${country}&apikey=${MUSIXMATCH_API_KEY}`;
+  const url = `${musixmatchApiUrl}/chart.artists.get?page=${page}&page_size=${pageSize}&country=${country}&apikey=${MUSIXMATCH_API_KEY}`;
 
   try {
     const res = await axios.get<
       MusixmatchResponse<{ artist_list: ArtistResponse[] }>
     >(url);
 
-    return getBody(res.data).artist_list.map(toArtist);
+    return musixmatchGetBody(res.data).artist_list.map(toArtist);
   } catch (error) {
     console.log(error);
     return [];
@@ -78,23 +78,23 @@ async function fetchTracks(
   country = "it"
 ): Promise<TrackNoLyrics[]> {
   const page = randomIntTo(10);
-  const tracksUrl = `${baseUrl}/chart.tracks.get?page=${page}&page_size=${pageSize}&country=${country}&f_has_lyrics=1&apikey=${MUSIXMATCH_API_KEY}`;
+  const tracksUrl = `${musixmatchApiUrl}/chart.tracks.get?page=${page}&page_size=${pageSize}&country=${country}&f_has_lyrics=1&apikey=${MUSIXMATCH_API_KEY}`;
 
   return await axios
     .get<MusixmatchResponse<{ track_list: TrackResponse[] }>>(tracksUrl)
     .then((r) =>
-      getBody(r.data)
+      musixmatchGetBody(r.data)
         .track_list.filter(({ track }) => track.has_lyrics === 1)
         .map(toTrackNoLyrics)
     );
 }
 
 async function fetchLyrics(trackId: number): Promise<LyricsResponse> {
-  const lyricsUrl = `${baseUrl}/track.lyrics.get?track_id=${trackId}&apikey=${MUSIXMATCH_API_KEY}`;
+  const lyricsUrl = `${musixmatchApiUrl}/track.lyrics.get?track_id=${trackId}&apikey=${MUSIXMATCH_API_KEY}`;
 
   return await axios
     .get<MusixmatchResponse<{ lyrics: LyricsResponse }>>(lyricsUrl)
-    .then((r) => getBody(r.data).lyrics);
+    .then((r) => musixmatchGetBody(r.data).lyrics);
 }
 
 function getRandomLine(lyrics: LyricsResponse): string {
@@ -127,6 +127,7 @@ export default async (
   res: NextApiResponse<GameConfig>
 ) => {
   await runMiddleware(req, res, cors);
+
   // res.status(200).send(mockGame());
   // return;
 

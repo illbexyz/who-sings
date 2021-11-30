@@ -6,7 +6,7 @@ import {
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AppLoading from "expo-app-loading";
-import { NativeBaseProvider, useColorMode } from "native-base";
+import { NativeBaseProvider } from "native-base";
 import React, { useEffect } from "react";
 import GameResultsScreen from "./src/screens/GameResultsScreen";
 import GameScreen from "./src/screens/GameScreen";
@@ -14,7 +14,7 @@ import HomeScreen from "./src/screens/HomeScreen";
 import LeaderboardScreen from "./src/screens/LeaderboardScreen";
 import ProfileScreen from "./src/screens/ProfileScreen";
 import { useStore } from "./src/store/store";
-import { theme } from "./src/utils/theme";
+import { customTheme } from "./src/utils/theme";
 
 const config = {
   dependencies: {
@@ -39,19 +39,15 @@ function App() {
     JosefinSans_500Medium,
     JosefinSans_700Bold,
   });
-  const { setColorMode } = useColorMode();
 
-  useEffect(() => {
-    restoreState();
-    setColorMode("dark");
-  }, []);
+  useEffect(() => restoreState(), []);
 
   if (!fontsLoaded || isInitializing) {
     return <AppLoading />;
   }
 
   return (
-    <NativeBaseProvider config={config} theme={theme}>
+    <NativeBaseProvider config={config} theme={customTheme}>
       <NavigationContainer>
         <Stack.Navigator
           initialRouteName="HomeScreen"

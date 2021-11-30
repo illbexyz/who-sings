@@ -19,7 +19,7 @@ const baseTheme = {
   initialColorMode: "dark",
 };
 
-export const theme = extendTheme({
+export const customTheme = extendTheme({
   ...baseTheme,
 
   sizes: {
@@ -89,3 +89,9 @@ export const theme = extendTheme({
     FormControl: {},
   },
 });
+
+type CustomThemeType = typeof customTheme;
+
+declare module "native-base" {
+  interface ICustomTheme extends CustomThemeType {}
+}

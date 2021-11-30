@@ -1,27 +1,40 @@
 import { useFocusEffect } from "@react-navigation/core";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Button, Center, Column, Heading, Text } from "native-base";
+import { Box, Button, Column, Heading, Row, Text, useTheme } from "native-base";
 import React, { useCallback } from "react";
 import { RootStackParamList } from "../../App";
-import { scoreOfGame } from "../models/score";
+import Error from "../components/Error";
+import ScreenWithTitle from "../components/ScreenWithTitle";
+import {
+  bonusPointsOfGame,
+  rightAnswersOfGame,
+  RIGHT_ANSWER_SCORE,
+} from "../models/score";
 import { useStore } from "../store/store";
-import { theme } from "../utils/theme";
 
 type LeaderboardProps = NativeStackScreenProps<
   RootStackParamList,
   "LeaderboardScreen"
 >;
 
-const Container: React.FC = ({ children }) => (
-  <Center bg={theme.colors.backgroundGradient} flex={1} safeArea>
-    {children}
-  </Center>
-);
-
 export default function GameResultsScreen({ navigation }: LeaderboardProps) {
-  const score = useStore((store) =>
-    store.game ? scoreOfGame(store.game) : null
+  const theme = useTheme();
+  const game = useStore((store) => store.game);
+  const [rightAnswers, bonusPoints] = useStore(
+    useCallback(
+      (store) =>
+        store.game
+          ? [rightAnswersOfGame(store.game), bonusPointsOfGame(store.game)]
+          : [null, null],
+      [game]
+    )
   );
+
+  const score =
+    rightAnswers &&
+    bonusPoints &&
+    rightAnswers * RIGHT_ANSWER_SCORE + bonusPoints;
+
   const clearGame = useStore((store) => store.clearGame);
   const saveScore = useStore((store) => store.saveScore);
 
@@ -34,18 +47,31 @@ export default function GameResultsScreen({ navigation }: LeaderboardProps) {
   );
 
   if (score == null) {
-    return (
-      <Container>
-        <Text>Something went wrong</Text>
-      </Container>
-    );
+    return <Error />;
   }
 
   return (
-    <Container>
-      <Heading>Score: {score}</Heading>
+    <ScreenWithTitle title={`Results`}>
+      <Column flexGrow={1} maxH={{ sm: 96 }}>
+        <Text fontSize="xl">Score</Text>
+        <Heading fontSize="7xl">{score}</Heading>
 
-      <Column>
+        <Row>
+          <Text w="32" fontSize="xl">
+            {rightAnswers}/{game?.config.questions.length} songs{" "}
+          </Text>
+          <Text fontSize="xl">{rightAnswers! * RIGHT_ANSWER_SCORE}</Text>
+        </Row>
+
+        <Row>
+          <Text w="32" fontSize="xl">
+            Time bonus
+          </Text>
+          <Text fontSize="xl">{bonusPoints}</Text>
+        </Row>
+
+        <Box flex={1}></Box>
+
         <Button
           mt="8"
           onPress={() => {
@@ -60,6 +86,6 @@ export default function GameResultsScreen({ navigation }: LeaderboardProps) {
           Home
         </Button>
       </Column>
-    </Container>
+    </ScreenWithTitle>
   );
 }

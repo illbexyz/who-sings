@@ -1,36 +1,19 @@
 import { useFocusEffect } from "@react-navigation/core";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Box, Button, Center, Column, Spinner, Text } from "native-base";
-import { ColorType } from "native-base/lib/typescript/components/types";
+import { Box, Column, Text, useTheme } from "native-base";
 import React, { useCallback } from "react";
 import { RootStackParamList } from "../../App";
+import GameButton from "../components/GameButton";
 import GameTimer from "../components/GameTimer";
+import ScreenWithLoader from "../components/ScreenWithLoader";
 import { Artist } from "../models/artist";
 import { Game, gameHasNextQuestion } from "../models/game";
 import { useStore } from "../store/store";
-import { theme } from "../utils/theme";
 
 type GameProps = NativeStackScreenProps<RootStackParamList, "GameScreen">;
 
-function buttonBg(
-  correctChoice: Artist,
-  userChoice: Artist | null,
-  currentChoice: Artist
-): ColorType {
-  if (currentChoice.id === userChoice?.id) {
-    return currentChoice.id === correctChoice.id ? "green.400" : "red.400";
-  }
-
-  return currentChoice.id === correctChoice.id ? "green.400" : undefined;
-}
-
-const Loader = () => (
-  <Center bg={theme.colors.backgroundGradient} flex={1} safeArea>
-    <Spinner size="lg" accessibilityLabel="Loading game" />
-  </Center>
-);
-
 export default function GameScreen({ navigation }: GameProps) {
+  const theme = useTheme();
   const [game, createGame, nextQuestion, answer] = useStore((store) => [
     store.game,
     store.createGame,
@@ -62,7 +45,7 @@ export default function GameScreen({ navigation }: GameProps) {
   const question = game?.config.questions[game.currentIndex];
 
   if (!question) {
-    return <Loader />;
+    return <ScreenWithLoader />;
   }
 
   const userChoice = game.showCorrectAnswer
@@ -91,9 +74,7 @@ export default function GameScreen({ navigation }: GameProps) {
       >
         <GameTimer
           isTicking={!game.showCorrectAnswer}
-          onTimesUp={() => {
-            answerThenGoNext(game, null);
-          }}
+          onTimesUp={() => answerThenGoNext(game, null)}
         />
 
         <Text fontSize="md" mt="8">
@@ -106,30 +87,17 @@ export default function GameScreen({ navigation }: GameProps) {
 
         <Box flex={1} minH="16" />
 
-        {question.choices.map((artist) => {
-          const bgColor =
-            userChoice === undefined
-              ? undefined
-              : buttonBg(question.track.artist, userChoice.artist, artist);
-
-          return (
-            <Button
-              key={artist.id}
-              mt="3"
-              w="full"
-              justifyContent="flex-start"
-              bg={bgColor}
-              _focus={{ bg: bgColor }}
-              _hover={{ bg: bgColor }}
-              _pressed={{ bg: bgColor }}
-              onPress={() => {
-                answerThenGoNext(game, artist);
-              }}
-            >
-              {artist.name}
-            </Button>
-          );
-        })}
+        {question.choices.map((artist) => (
+          <GameButton
+            key={artist.id}
+            artist={artist}
+            question={question}
+            userChoice={userChoice}
+            onPress={() =>
+              !game.showCorrectAnswer && answerThenGoNext(game, artist)
+            }
+          ></GameButton>
+        ))}
       </Column>
     </Column>
   );
