@@ -14,12 +14,12 @@ export default function ScreenWithTitle({
   return (
     <Column
       safeArea
-      flex={1}
+      flexGrow={1}
       alignItems={{ base: "stretch", sm: "center" }}
       bg={theme.colors.backgroundGradient}
       p={8}
     >
-      <Column flex={1} maxW="96">
+      <Column flexGrow={1} maxW="96">
         <Heading mb="8" size="2xl" flexShrink={0} flexGrow={0} noOfLines={2}>
           {title}
         </Heading>

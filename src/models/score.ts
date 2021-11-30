@@ -6,6 +6,7 @@ import { Game, GameAnswer } from "./game";
 export interface Score {
   username: string;
   points: number;
+  timestamp: number;
 }
 
 export const RIGHT_ANSWER_SCORE = 1000;

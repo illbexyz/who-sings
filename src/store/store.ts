@@ -132,7 +132,7 @@ export const useStore = create<AppState>((set, get) => ({
       return;
     }
 
-    const score = { username, points };
+    const score: Score = { username, points, timestamp: new Date().getTime() };
     const nextScores = [...scores, score];
 
     set(() => ({ scores: nextScores }));

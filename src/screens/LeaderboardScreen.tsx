@@ -50,11 +50,17 @@ export default function LeaderboardScreen({ navigation }: LeaderboardProps) {
 
   return (
     <ScreenWithTitle title="Top 10 scores">
-      <ScrollView>
-        {sortedScores.map((score, idx) => (
-          <LeaderboardScore key={idx} score={score} idx={idx + 1} />
-        ))}
-      </ScrollView>
+      {sortedScores.length ? (
+        <ScrollView>
+          {sortedScores.map((score, idx) => (
+            <LeaderboardScore key={idx} score={score} idx={idx + 1} />
+          ))}
+        </ScrollView>
+      ) : (
+        <Text fontSize="xl">
+          Play some games and check your scores here! 😎
+        </Text>
+      )}
     </ScreenWithTitle>
   );
 }

@@ -5,7 +5,7 @@ export default function ScreenWithLoader() {
   const theme = useTheme();
 
   return (
-    <Center bg={theme.colors.backgroundGradient} flex={1} safeArea>
+    <Center bg={theme.colors.backgroundGradient} flexGrow={1} safeArea>
       <Spinner size="lg" accessibilityLabel="Loading" />
     </Center>
   );

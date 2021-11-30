@@ -55,13 +55,13 @@ export default function GameScreen({ navigation }: GameProps) {
   return (
     <Column
       safeArea
-      flex={1}
+      flexGrow={1}
       alignItems="center"
       justifyContent="center"
       bg={theme.colors.backgroundGradient}
     >
       <Column
-        flex={1}
+        flexGrow={1}
         w={{ base: "full", sm: "85%", xl: "50%" }}
         px="8"
         py="6"
@@ -85,7 +85,7 @@ export default function GameScreen({ navigation }: GameProps) {
           {question.track.lyrics}
         </Text>
 
-        <Box flex={1} minH="16" />
+        <Box flexGrow={1} minH="16" />
 
         {question.choices.map((artist) => (
           <GameButton
