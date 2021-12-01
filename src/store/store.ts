@@ -1,10 +1,10 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import create from "zustand";
+import { apiBaseUrl } from "../config/api";
 import { Artist } from "../models/artist";
 import { Game, GameConfig } from "../models/game";
 import { Score } from "../models/score";
-import { apiBaseUrl } from "../utils/api";
 
 export interface AppState {
   isInitializing: boolean;
